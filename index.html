@@ -8,37 +8,46 @@
     <h2>Open New Tabs</h2>
 	<p>This app can help you open the google drive folder or files in new window.</p>
 
-    <!--Add buttons to initiate auth sequence and sign out-->
     <button id="authorize_button" style="display: none;">Authorize</button>
     <button id="signout_button" style="display: none;">Sign Out</button>
 
-    <pre id="content" style="white-space: pre-wrap;"></pre>
+	<h3>Muilt Link</h3>
+	<p>If you open the mulit forlder, but your browser disabled jump window, you can't open the folder on new window.</p>
+	<p>Please click the links, it will open the window on new window.</p>
+	<div id='link'>
+	
+	</div>
+    <p><a href='policy.html' target='_blank'>Privacy Policy</a></p>
 
     <script type="text/javascript">
-      // Client ID and API key from the Developer Console
       var CLIENT_ID = '825006991114-90j74a2tf4iuo224rdv0g6r39ita0eg4.apps.googleusercontent.com';
       var API_KEY = 'AIzaSyBR-5xUZPt8aJ1Lm3tphPt70jt_5QdL4go';
-      // Array of API discovery doc URLs for APIs used by the quickstart
       var DISCOVERY_DOCS = ["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"];
-      // Authorization scopes required by the API; multiple scopes can be
-      // included, separated by spaces.
       var SCOPES = 'https://www.googleapis.com/auth/drive.install https://www.googleapis.com/auth/drive.metadata';
-	  //var SCOPES = 'https://www.googleapis.com/auth/drive.metadata.readonly';
       var authorizeButton = document.getElementById('authorize_button');
       var signoutButton = document.getElementById('signout_button');
-      /**
-       *  On load, called to load the auth2 library and API client library.
-       */
+	  
       function handleClientLoad() {
         gapi.load('client:auth2', initClient);
-		var id = JSON.parse(decodeURI(location.search).split('=')[1])['ids'][0];
+		var id = JSON.parse(decodeURI(location.search).split('=')[1])['ids'];
 		console.log(id);
-		location.href = 'https://drive.google.com/open?id=' + id;
+		if (id.length == 1){
+			console.log(id);
+			location.href = 'https://drive.google.com/open?id=' + id[0];
+		}else{
+			var str = '';
+			var link = document.getElementById('link');
+			for(var i=0; i<id.length; i++){
+				console.log(id[i]);
+				window.open('https://drive.google.com/open?id=' + id[i]);
+				//console.log('<p><a href="https://drive.google.com/open?id='+id[i]+'" target="_blank">'+id[i]+'</a></p>');
+				str += '<a href="https://drive.google.com/open?id='+id[i]+'" target="_blank">'+id[i]+'</a><br/>';
+			}
+			link.innerHTML = str;
+		}
+		
       }
-      /**
-       *  Initializes the API client library and sets up sign-in state
-       *  listeners.
-       */
+	  
       function initClient() {
         gapi.client.init({
           apiKey: API_KEY,
@@ -46,9 +55,7 @@
           discoveryDocs: DISCOVERY_DOCS,
           scope: SCOPES
         }).then(function () {
-          // Listen for sign-in state changes.
           gapi.auth2.getAuthInstance().isSignedIn.listen(updateSigninStatus);
-          // Handle the initial sign-in state.
           updateSigninStatus(gapi.auth2.getAuthInstance().isSignedIn.get());
           authorizeButton.onclick = handleAuthClick;
           signoutButton.onclick = handleSignoutClick;
@@ -56,10 +63,7 @@
           appendPre(JSON.stringify(error, null, 2));
         });
       }
-      /**
-       *  Called when the signed in status changes, to update the UI
-       *  appropriately. After a sign-in, the API is called.
-       */
+	  
       function updateSigninStatus(isSignedIn) {
         if (isSignedIn) {
           authorizeButton.style.display = 'none';
@@ -70,50 +74,20 @@
           signoutButton.style.display = 'none';
         }
       }
-      /**
-       *  Sign in the user upon button click.
-       */
+	  
       function handleAuthClick(event) {
         gapi.auth2.getAuthInstance().signIn();
       }
-      /**
-       *  Sign out the user upon button click.
-       */
+	  
       function handleSignoutClick(event) {
         gapi.auth2.getAuthInstance().signOut();
       }
-      /**
-       * Append a pre element to the body containing the given message
-       * as its text node. Used to display the results of the API call.
-       *
-       * @param {string} message Text to be placed in pre element.
-       */
+	  
       function appendPre(message) {
         var pre = document.getElementById('content');
         var textContent = document.createTextNode(message + '\n');
         pre.appendChild(textContent);
       }
-      /**
-       * Print files.
-       */
-	   /*
-      function listFiles() {
-        gapi.client.drive.files.list({
-          'pageSize': 100,
-          'fields': "nextPageToken, files(id, name)"
-        }).then(function(response) {
-          appendPre('Files:');
-          var files = response.result.files;
-          if (files && files.length > 0) {
-            for (var i = 0; i < files.length; i++) {
-              var file = files[i];
-              appendPre(file.name + ' (https://drive.google.com/open?id=' + file.id + ')');
-            }
-          } else {
-            appendPre('No files found.');
-          }
-        });
-      }*/
 	  
     </script>
 
@@ -121,5 +95,14 @@
       onload="this.onload=function(){};handleClientLoad()"
       onreadystatechange="if (this.readyState === 'complete') this.onload()">
     </script>
+	<script async src="https://www.googletagmanager.com/gtag/js?id=UA-1985526-13"></script>
+	<script>
+	  window.dataLayer = window.dataLayer || [];
+	  function gtag(){dataLayer.push(arguments);}
+	  gtag('js', new Date());
+
+	  gtag('config', 'UA-1985526-13');
+	</script>
+
   </body>
 </html>
