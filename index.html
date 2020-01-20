@@ -3,6 +3,8 @@
   <head>
     <title>OpenNewTabs</title>
     <meta charset="utf-8" />
+	
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
   </head>
   <body>
     <h2>Open New Tabs</h2>
@@ -11,8 +13,12 @@
     <button id="authorize_button" style="display: none;">Authorize</button>
     <button id="signout_button" style="display: none;">Sign Out</button>
 
-	<h3>Muilt Link</h3>
-	<p>If you open the mulit forlder, but your browser disabled jump window, you can't open the folder on new window.</p>
+	<p><label for='auto'><input type="checkbox" id="auto"> Auto Open Link </label></p>
+	
+	<button id="copy_button">Open With "Copy, URL to Google Drive"</button>
+
+	<h3>Multi Link</h3>
+	<p>If you open the multi forlder, but your browser disabled jump window, you can't open the folder on new window.</p>
 	<p>Please click the links, it will open the window on new window.</p>
 	<div id='link'>
 	
@@ -26,26 +32,56 @@
       var SCOPES = 'https://www.googleapis.com/auth/drive.install https://www.googleapis.com/auth/drive.metadata';
       var authorizeButton = document.getElementById('authorize_button');
       var signoutButton = document.getElementById('signout_button');
+	 
+	$( document ).ready(function() {
+		var open = '';
+		var auto = getCookie('auto');
+		if(auto == 'true'){ open=true; }else{ open=false; }
+	    $('#auto').prop('checked', open);
+	});
+	  
+	$('#auto').click(function(){
+		doCookieSetup('auto', $(this).prop('checked'));
+	});
+	
+	function doCookieSetup(name, value) {
+	  var expires = new Date();
+	  expires.setTime(expires.getTime() + (3600 * 1000 * 24 * 365 * 10) );
+	  document.cookie = name + "=" + escape(value) + ";expires=" + expires.toGMTString();
+    }
+	
+	function getCookie(cname){
+	  var name = cname + "=";
+	  var ca = document.cookie.split(';');
+	  for(var i=0; i<ca.length; i++) 
+	  {
+		var c = ca[i].trim();
+		if (c.indexOf(name)==0) return c.substring(name.length,c.length);
+	  }
+	  return "";
+	}
+	
 	  
       function handleClientLoad() {
         gapi.load('client:auth2', initClient);
 		var id = JSON.parse(decodeURI(location.search).split('=')[1])['ids'];
 		console.log(id);
-		if (id.length == 1){
-			console.log(id);
-			location.href = 'https://drive.google.com/open?id=' + id[0];
-		}else{
-			var str = '';
+		var open = $('#auto').prop('checked');
+		var str = '';
 			var link = document.getElementById('link');
+		if (open == true){
 			for(var i=0; i<id.length; i++){
 				console.log(id[i]);
 				window.open('https://drive.google.com/open?id=' + id[i]);
-				//console.log('<p><a href="https://drive.google.com/open?id='+id[i]+'" target="_blank">'+id[i]+'</a></p>');
 				str += '<a href="https://drive.google.com/open?id='+id[i]+'" target="_blank">'+id[i]+'</a><br/>';
 			}
-			link.innerHTML = str;
+		}else{
+			for(var i=0; i<id.length; i++){
+				console.log(id[i]);
+				str += '<a href="https://drive.google.com/open?id='+id[i]+'" target="_blank">'+id[i]+'</a><br/>';
+			}
 		}
-		
+		link.innerHTML = str;
       }
 	  
       function initClient() {
