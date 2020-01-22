@@ -8,122 +8,149 @@
   </head>
   <body>
     <h2>Open New Tabs</h2>
+	<h3><a href="https://docs.google.com/spreadsheets/d/1wPNNhd6Eh4URZf46aLfGC84AyzssxquHPosimZmTXt0/edit?usp=sharing" target="_blank">Tutorial 教學</a></h3>
 	<p>This app can help you open the google drive folder or files in new window.</p>
-
-    <button id="authorize_button" style="display: none;">Authorize</button>
-    <button id="signout_button" style="display: none;">Sign Out</button>
-
-	<p><label for='auto'><input type="checkbox" id="auto"> Auto Open Link </label></p>
+	<p>這個程式能幫你同時在新視窗開啟google 雲端硬碟的多個資料夾</p>
 	
-	<button id="copy_button">Open With "Copy, URL to Google Drive"</button>
 
-	<h3>Multi Link</h3>
-	<p>If you open the multi forlder, but your browser disabled jump window, you can't open the folder on new window.</p>
+    <button id="authorize_button" style="display: none;">Authorize 授權</button>
+    <button id="signout_button" style="display: none;">Sign Out 登出</button>
+
+	<p><label for='auto'><input type="checkbox" id="auto"> Auto Open Link 自動開啟連結</label></p>
+	
+	<button id="open_link">Open link 開啟連結</button> <br/><br/>
+	<button id="copy_button">Open With "Copy, URL to Google Drive" 透過"Copy, URL to Google Drive"開啟連結</button>
+
+	<h3>Note 注意事項</h3>
+	<p>If you can't open any link on new window., please check your browser disabled the jump window.</p>
 	<p>Please click the links, it will open the window on new window.</p>
+	<p>注意你的瀏覽器是否有封鎖快顯示窗</p>
+	<p>點擊下面的連結可以一次開啟一個視窗</p>
 	<div id='link'>
 	
 	</div>
     <p><a href='policy.html' target='_blank'>Privacy Policy</a></p>
 
     <script type="text/javascript">
-      var CLIENT_ID = '825006991114-90j74a2tf4iuo224rdv0g6r39ita0eg4.apps.googleusercontent.com';
-      var API_KEY = 'AIzaSyBR-5xUZPt8aJ1Lm3tphPt70jt_5QdL4go';
-      var DISCOVERY_DOCS = ["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"];
-      var SCOPES = 'https://www.googleapis.com/auth/drive.install https://www.googleapis.com/auth/drive.metadata';
-      var authorizeButton = document.getElementById('authorize_button');
-      var signoutButton = document.getElementById('signout_button');
+		var CLIENT_ID = '825006991114-90j74a2tf4iuo224rdv0g6r39ita0eg4.apps.googleusercontent.com';
+		var API_KEY = 'AIzaSyBR-5xUZPt8aJ1Lm3tphPt70jt_5QdL4go';
+		var DISCOVERY_DOCS = ["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"];
+		var SCOPES = 'https://www.googleapis.com/auth/drive.install https://www.googleapis.com/auth/drive.metadata';
+		var authorizeButton = document.getElementById('authorize_button');
+		var signoutButton = document.getElementById('signout_button');
 	 
-	$( document ).ready(function() {
-		var open = '';
-		var auto = getCookie('auto');
-		if(auto == 'true'){ open=true; }else{ open=false; }
-	    $('#auto').prop('checked', open);
-	});
+		$( document ).ready(function() {
+			var open = '';
+			var auto = getCookie('auto');
+			if(auto == 'true'){ open=true; }else{ open=false; }
+			$('#auto').prop('checked', open);
+		});
 	  
-	$('#auto').click(function(){
-		doCookieSetup('auto', $(this).prop('checked'));
-	});
+		$('#auto').click(function(){
+			doCookieSetup('auto', $(this).prop('checked'));
+		});
 	
-	function doCookieSetup(name, value) {
-	  var expires = new Date();
-	  expires.setTime(expires.getTime() + (3600 * 1000 * 24 * 365 * 10) );
-	  document.cookie = name + "=" + escape(value) + ";expires=" + expires.toGMTString();
-    }
-	
-	function getCookie(cname){
-	  var name = cname + "=";
-	  var ca = document.cookie.split(';');
-	  for(var i=0; i<ca.length; i++) 
-	  {
-		var c = ca[i].trim();
-		if (c.indexOf(name)==0) return c.substring(name.length,c.length);
-	  }
-	  return "";
-	}
+		function doCookieSetup(name, value) {
+			var expires = new Date();
+			expires.setTime(expires.getTime() + (3600 * 1000 * 24 * 365 * 10) );
+			document.cookie = name + "=" + escape(value) + ";expires=" + expires.toGMTString();
+		}
+		
+		function getCookie(cname){
+			var name = cname + "=";
+			var ca = document.cookie.split(';');
+			for(var i=0; i<ca.length; i++) 
+			{
+				var c = ca[i].trim();
+				if (c.indexOf(name)==0) return c.substring(name.length,c.length);
+			}
+			return "";
+		}
 	
 	  
-      function handleClientLoad() {
-        gapi.load('client:auth2', initClient);
-		var id = JSON.parse(decodeURI(location.search).split('=')[1])['ids'];
-		console.log(id);
-		var open = $('#auto').prop('checked');
-		var str = '';
+		function handleClientLoad() {
+			gapi.load('client:auth2', initClient);
+			var id = JSON.parse(decodeURI(location.search).split('=')[1])['ids'];
+			console.log(id);
+			var open = $('#auto').prop('checked');
+			var str = '';
 			var link = document.getElementById('link');
-		if (open == true){
+			if (open == true){
+				for(var i=0; i<id.length; i++){
+					console.log(id[i]);
+					window.open('https://drive.google.com/open?id=' + id[i]);
+					str += '<a href="https://drive.google.com/open?id='+id[i]+'" target="_blank">'+id[i]+'</a><br/>';
+				}
+			}else{
+				for(var i=0; i<id.length; i++){
+					console.log(id[i]);
+					str += '<a href="https://drive.google.com/open?id='+id[i]+'" target="_blank">'+id[i]+'</a><br/>';
+				}
+			}
+			link.innerHTML = str;
+		}
+	  
+		$('#open_link').click(function(){
+			var id = JSON.parse(decodeURI(location.search).split('=')[1])['ids'];
+			var str = '';
 			for(var i=0; i<id.length; i++){
 				console.log(id[i]);
 				window.open('https://drive.google.com/open?id=' + id[i]);
 				str += '<a href="https://drive.google.com/open?id='+id[i]+'" target="_blank">'+id[i]+'</a><br/>';
 			}
-		}else{
+		});
+		
+		$('#copy_button').click(function(){
+			var state = JSON.parse(decodeURI(location.search).split('=')[1]);
+			var id = state['ids'];
+			var str = '';
 			for(var i=0; i<id.length; i++){
 				console.log(id[i]);
-				str += '<a href="https://drive.google.com/open?id='+id[i]+'" target="_blank">'+id[i]+'</a><br/>';
+				state['ids']=id;
+				window.open('https://softgateon.herokuapp.com/urltodrive/?state=' + JSON.stringify(state) );
+			}
+		});
+	  
+		function initClient() {
+			gapi.client.init({
+				apiKey: API_KEY,
+				clientId: CLIENT_ID,
+				discoveryDocs: DISCOVERY_DOCS,
+				scope: SCOPES
+			}).then(function () {
+				gapi.auth2.getAuthInstance().isSignedIn.listen(updateSigninStatus);
+				updateSigninStatus(gapi.auth2.getAuthInstance().isSignedIn.get());
+				authorizeButton.onclick = handleAuthClick;
+				signoutButton.onclick = handleSignoutClick;
+			}, function(error) {
+				appendPre(JSON.stringify(error, null, 2));
+			});
+		}
+	  
+		function updateSigninStatus(isSignedIn) {
+			if (isSignedIn) {
+				authorizeButton.style.display = 'none';
+				signoutButton.style.display = 'block';
+				listFiles();
+			} else {
+				authorizeButton.style.display = 'block';
+				signoutButton.style.display = 'none';
 			}
 		}
-		link.innerHTML = str;
-      }
 	  
-      function initClient() {
-        gapi.client.init({
-          apiKey: API_KEY,
-          clientId: CLIENT_ID,
-          discoveryDocs: DISCOVERY_DOCS,
-          scope: SCOPES
-        }).then(function () {
-          gapi.auth2.getAuthInstance().isSignedIn.listen(updateSigninStatus);
-          updateSigninStatus(gapi.auth2.getAuthInstance().isSignedIn.get());
-          authorizeButton.onclick = handleAuthClick;
-          signoutButton.onclick = handleSignoutClick;
-        }, function(error) {
-          appendPre(JSON.stringify(error, null, 2));
-        });
-      }
+		function handleAuthClick(event) {
+			gapi.auth2.getAuthInstance().signIn();
+		}
 	  
-      function updateSigninStatus(isSignedIn) {
-        if (isSignedIn) {
-          authorizeButton.style.display = 'none';
-          signoutButton.style.display = 'block';
-          listFiles();
-        } else {
-          authorizeButton.style.display = 'block';
-          signoutButton.style.display = 'none';
-        }
-      }
+		function handleSignoutClick(event) {
+			gapi.auth2.getAuthInstance().signOut();
+		}
 	  
-      function handleAuthClick(event) {
-        gapi.auth2.getAuthInstance().signIn();
-      }
-	  
-      function handleSignoutClick(event) {
-        gapi.auth2.getAuthInstance().signOut();
-      }
-	  
-      function appendPre(message) {
-        var pre = document.getElementById('content');
-        var textContent = document.createTextNode(message + '\n');
-        pre.appendChild(textContent);
-      }
+		function appendPre(message) {
+			var pre = document.getElementById('content');
+			var textContent = document.createTextNode(message + '\n');
+			pre.appendChild(textContent);
+		}
 	  
     </script>
 
