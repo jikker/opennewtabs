@@ -107,7 +107,7 @@
 			for(var i=0; i<id.length; i++){
 				console.log(id[i]);
 				state['ids']=id[i];
-				window.open('https://softgateon.herokuapp.com/urltodrive/?state=' + JSON.stringify(state) );
+				window.open('https://softgateon.herokuapp.com/urltodrive/?state=' + encodeURI( JSON.stringify(state) ) );
 			}
 		});
 	  
