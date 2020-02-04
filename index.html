@@ -22,6 +22,8 @@
 	<button id="copy_button">Open With "Copy, URL to Google Drive" 透過"Copy, URL to Google Drive"開啟連結</button>
 
 	<h3>Note 注意事項</h3>
+	<p>The app always auto open the link, When you select only one folder.</p>
+	<p>只選擇一個資料夾時，一律自動開啟連結</p>
 	<p>If you can't open any link on new window., please check your browser disabled the jump window.</p>
 	<p>Please click the links, it will open the window on new window.</p>
 	<p>注意你的瀏覽器是否有封鎖快顯示窗</p>
@@ -75,7 +77,7 @@
 			var open = $('#auto').prop('checked');
 			var str = '';
 			var link = document.getElementById('link');
-			if (open == true){
+			if (open == true || id.length == 1){
 				for(var i=0; i<id.length; i++){
 					console.log(id[i]);
 					window.open('https://drive.google.com/open?id=' + id[i]);
